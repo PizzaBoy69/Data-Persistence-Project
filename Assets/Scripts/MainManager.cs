@@ -18,10 +18,13 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
-    
+    private MainUIHandler MainUIHandlerScript;
+
     // Start is called before the first frame update
     void Start()
     {
+        MainUIHandlerScript = GameObject.Find("Canvas").GetComponent<MainUIHandler>();
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -55,6 +58,15 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
+            if (m_Points > SceneSaver.Instance.highScore)
+            {
+                SceneSaver.Instance.highScore = m_Points;
+                SceneSaver.Instance.bestName = SceneSaver.Instance.playerName;
+                
+                MainUIHandlerScript.bestScoreTracker.text = "Best score: " + SceneSaver.Instance.bestName + " : " + SceneSaver.Instance.highScore;
+                SceneSaver.Instance.SaveRecord();
+                Debug.Log(m_Points + " a " + SceneSaver.Instance.highScore);
+            }
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -72,5 +84,6 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+ 
     }
 }
